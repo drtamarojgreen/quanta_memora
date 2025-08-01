@@ -7,6 +7,8 @@
 #include <sstream>
 #include <filesystem>
 #include <map>
+#include <cstddef>
+#include <algorithm>
 
 namespace fs = std::filesystem;
 
@@ -253,7 +255,7 @@ public:
         std::cout << "YOUR THOUGHT RECORDS" << std::endl;
         std::cout << std::string(60, '=') << std::endl;
         
-        for (size_t i = 0; i < records.size(); ++i) {
+        for (std::size_t i = 0; i < records.size(); ++i) {
             const auto& record = records[i];
             std::cout << "\n[" << (i + 1) << "] " << record.timestamp 
                       << " (ID: " << record.id << ")" << std::endl;
