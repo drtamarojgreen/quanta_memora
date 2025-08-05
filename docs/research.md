@@ -1,120 +1,117 @@
-# 100 Research-Specific Application Ideas
+# 100 Applications for AI Governance and LLM Monitoring
 
-This document provides a list of 100 application ideas specifically designed for cognitive science, psychology, and mental health research. These applications could be developed or prototyped using a robust template generator.
+This document provides a list of 100 application ideas focused on the governance, monitoring, and safety of AI systems, particularly Large Language Models (LLMs) and agentic applications.
 
 ---
 
-## I. Foundational Cognitive Tasks (1-20)
+## I. Foundational Monitoring & Auditing (1-25)
 
-1.  **Stroop Task**: Measures cognitive interference and processing speed by having users name the color of a word when the word itself is a different color.
-2.  **N-Back Task**: Assesses working memory by requiring users to recall a stimulus from 'n' steps earlier.
-3.  **Go/No-Go Task**: Tests response inhibition by having users respond to a "Go" stimulus but withhold response to a "No-Go" stimulus.
-4.  **Flanker Task**: Measures selective attention by asking users to identify a central target stimulus flanked by either congruent or incongruent distractors.
-5.  **Task-Switching Paradigm**: Assesses cognitive flexibility by requiring users to switch between two or more different tasks.
-6.  **Simon Task**: Measures response interference by presenting a stimulus on one side of the screen that requires a response from the opposite side.
-7.  **Posner Cueing Task**: Assesses attention shifts by using a cue to direct a participant's attention to a location before a target appears.
-8.  **Wisconsin Card Sorting Test (WCST)**: A test of cognitive flexibility where users must sort cards according to changing rules.
-9.  **Tower of London Task**: Assesses planning and problem-solving skills by requiring users to move beads on pegs to match a target configuration.
-10. **Corsi Block-Tapping Test**: A visuospatial short-term memory task where users must repeat a sequence of tapped blocks.
-11. **Digit Span Task**: Measures verbal short-term memory by having users recall and repeat a sequence of digits.
-12. **Serial Reaction Time Task (SRTT)**: Assesses implicit learning by having users respond to a repeating sequence of stimuli.
-13. **Mental Rotation Task**: Tests spatial reasoning by asking users to determine if two 3D objects are the same, but rotated.
-14. **Change Blindness Task**: A visual perception task where users must spot a change between two alternating images.
-15. **Attentional Blink Task**: Measures the temporal limits of attention by presenting two target stimuli in rapid succession.
-16. **Iowa Gambling Task (IGT)**: A decision-making task that simulates real-life choices with uncertain rewards and punishments.
-17. **Lexical Decision Task**: Measures how quickly users can classify a string of letters as either a real word or a non-word.
-18. **Priming Task**: Assesses implicit memory by measuring how a preceding stimulus influences the response to a subsequent target stimulus.
-19. **Dot-Probe Task**: Measures attentional bias by presenting two stimuli (e.g., one threatening, one neutral) and then probing one of their locations.
-20. **Visual Search Task**: Assesses attention by requiring users to find a target item among a field of distractors.
+1.  **LLM Output Classifier**: A model that classifies LLM outputs into categories like "safe," "hate speech," "medical advice," "financial advice" for content filtering.
+2.  **Toxicity Detection System**: A real-time monitor that scores the toxicity of LLM-generated text using a pre-defined scale.
+3.  **PII Redaction Service**: An application that identifies and redacts Personally Identifiable Information (PII) from both prompts and LLM responses.
+4.  **Bias Detection Dashboard**: A tool that runs a suite of tests on an LLM to measure biases related to gender, race, religion, and other demographics.
+5.  **Model Performance Tracker**: A dashboard that tracks key performance metrics (e.g., accuracy, latency, cost per query) of a deployed LLM over time.
+6.  **Prompt Injection Detector**: A security model that analyzes prompts to detect attempts to hijack the LLM's function (e.g., "ignore previous instructions and do this...").
+7.  **Adversarial Attack Simulator**: A tool that automatically generates and tests adversarial prompts to assess a model's robustness.
+8.  **Data Drift Monitor**: A system that monitors the statistical properties of incoming prompts and flags significant deviations from the training data distribution.
+9.  **Concept Drift Detector**: An application that detects changes in the meaning of concepts over time, which could degrade model performance.
+10. **Uncertainty Estimator**: A model that quantifies the LLM's uncertainty for a given response, allowing high-uncertainty outputs to be flagged for human review.
+11. **Hallucination Detector**: A fact-checking system that cross-references LLM outputs against a trusted knowledge base to detect factual inaccuracies or "hallucinations."
+12. **Jailbreak Attempt Logger**: A security tool that specifically logs and classifies attempts to bypass the safety filters of an LLM.
+13. **Compliance Auditor**: An automated tool that checks if an LLM's outputs comply with specific regulatory requirements (e.g., GDPR, HIPAA).
+14. **Economic Impact Analyzer**: A simulator that models the potential economic impact (e.g., on jobs, markets) of deploying a powerful new agentic model.
+15. **Energy Consumption Monitor**: A tool to track and report the energy consumption and carbon footprint of training and running large AI models.
+16. **Water Usage Tracker**: A system to measure and report the water usage associated with cooling the data centers that run AI models.
+17. **Model Card Generator**: An application that automatically generates a "model card" detailing a model's architecture, performance, biases, and intended use.
+18. **Datasheet Creator**: A tool to automatically generate a "datasheet for datasets" that documents the properties and potential biases of a training dataset.
+19. **Reproducibility Checker**: A tool that verifies if a model's training process can be reproduced to achieve similar results, a key aspect of scientific validity.
+20. **IP Infringement Detector**: A system that scans LLM outputs for potential copyright or intellectual property violations.
+21. **Sentiment Drift Monitor**: A tool that tracks the average sentiment of LLM responses over time to detect undesirable changes in tone.
+22. **Code Quality Scanner**: For code-generating models, a tool that scans the generated code for security vulnerabilities, bugs, and style issues.
+23. **Explanation Quality Assessor**: A system that rates the quality and faithfulness of explanations generated by XAI (Explainable AI) techniques.
+24. **Fairness Metrics Dashboard**: A dashboard that visualizes various fairness metrics (e.g., demographic parity, equalized odds) for a classification model.
+25. **Model Versioning and Rollback System**: An infrastructure tool that allows for easy deployment of new model versions and quick rollbacks if issues are detected.
 
-## II. Ecological Momentary Assessment (EMA) & Diary Studies (21-40)
+## II. Human-in-the-Loop & Interaction (26-50)
 
-21. **Symptom Diary**: A daily or multi-daily logger for specific symptoms (e.g., anxiety, pain, fatigue) using VAS or Likert scales.
-22. **Mood Tracker with Context**: Prompts users to log their mood and select contextual factors like activity, location, and social company.
-23. **Sleep Diary**: A detailed log for sleep patterns, including bedtime, wake time, sleep quality, and nighttime awakenings (CBT-I).
-24. **Food Diary for Eating Disorder Research**: A structured diary for logging meals, context, and associated thoughts and feelings.
-25. **Substance Use/Craving Diary**: An EMA tool for addiction research to log substance use, cravings, triggers, and coping responses.
-26. **Social Interaction Log**: Prompts users to log details about their social interactions, including duration, enjoyment, and anxiety levels.
-27. **Activity & Procrastination Log**: A tool to track activities, time spent, and feelings of productivity or procrastination.
-28. **Auditory Hallucination Diary**: A specialized diary for psychosis research to log the content, frequency, and distress of auditory hallucinations.
-29. **Rumination/Worry Sampler**: Randomly prompts users to report if they are currently ruminating or worrying.
-30. **Positive Events Log**: A diary focused on positive psychology, where users log positive events and their emotional impact.
-31. **Medication Adherence Tracker**: A simple tool for users to log when they have taken their prescribed medication.
-32. **Self-Esteem Monitor**: Prompts users to rate their self-esteem at various points throughout the day.
-33. **Cognitive Reappraisal Diary**: A tool where users log negative events and are guided to re-interpret them in a more positive light.
-34. **Mindfulness & Meditation Log**: Tracks formal and informal mindfulness practice, including duration and perceived benefits.
-35. **Stress & Coping Diary**: Users log stressful events and the coping strategies they used in response.
-36. **Relationship Conflict Diary**: For couples research, a tool for individuals to log conflicts, communication patterns, and resolutions.
-37. **Technology Use Tracker**: Prompts users to log their screen time or specific app usage and its effect on their mood.
-38. **Physical Activity Log**: A simple log for tracking type, duration, and intensity of physical exercise.
-39. **Menstrual Cycle Symptom Tracker**: A diary for research on hormonal effects on mood and cognition.
-40. **Daily Hassles & Uplifts Scale**: An EMA version of the classic scale where users log minor positive and negative events.
+26. **Human-in-the-Loop (HITL) Review Portal**: A web interface where human reviewers can inspect, approve, or reject high-stakes decisions made by an AI agent.
+27. **Crowdsourced Bias Reporting Tool**: An application that allows users to easily report biased or problematic LLM outputs, creating a feedback loop for developers.
+28. **AI Safety Testbed**: A simulated environment where new AI agents can be tested in a safe, sandboxed environment before being deployed in the real world.
+29. **Red Teaming as a Service**: A platform that provides expert human "red teams" to systematically test an AI model's defenses and safety features.
+30. **Interactive Model Debugger**: A tool that allows developers to step through a model's decision-making process and inspect its internal states.
+31. **Constitutional AI Implementer**: A system for fine-tuning an LLM based on a set of ethical principles or a "constitution," with human oversight of the process.
+32. **AI Ethics Committee Dashboard**: A platform to facilitate the work of an AI ethics committee, allowing them to review projects, track risks, and document decisions.
+33. **Structured Feedback Collector**: A tool that prompts users for structured feedback on LLM outputs, going beyond a simple thumbs up/down.
+34. **AI Tutor for Safe Usage**: An educational application that teaches users how to interact with LLMs safely and effectively, avoiding common pitfalls.
+35. **Dynamic Safety Filter Tuner**: A system that allows administrators to adjust the strictness of safety filters in real-time based on observed threats.
+36. **A/B Testing Platform for Safety**: A framework for A/B testing different safety interventions (e.g., new filters, different fine-tuning methods) to see which is most effective.
+37. **Personalized Ethics Setting**: An application that allows individual users to customize the ethical guidelines or "personality" of their personal AI assistant.
+38. **"Glass Box" AI Interface**: A user interface that visualizes the reasoning process of an AI model in an intuitive way, promoting transparency.
+39. **AI Mediator for Disputes**: An application that uses an LLM to help mediate disputes between humans, with a human overseer to ensure fairness.
+40. **Parental Control for AI**: A dashboard for parents to set limits and monitor the usage of AI applications by their children.
+41. **AI-Assisted Audit Trail Analysis**: A tool that helps human auditors quickly analyze the log files of AI agents to spot suspicious activity.
+42. **"Tripwire" System**: A system where certain sensitive actions by an AI agent automatically trigger a human review.
+43. **Collaborative AI Training Platform**: A platform where multiple stakeholders can contribute to the training and fine-tuning of a model, ensuring diverse perspectives.
+44. **AI Bill of Rights Compliance Checker**: A tool that assesses an AI system's compliance with emerging standards like the US "Blueprint for an AI Bill of Rights."
+45. **Digital Watermarking for AI Content**: A system that invisibly embeds a watermark in AI-generated content (images, text, audio) to indicate its origin.
+46. **Synthetic Data Generation for Safety Testing**: A tool that generates synthetic data to test edge cases and potential failure modes of an AI model.
+47. **Role-Playing Simulator for AI Agents**: A simulator where AI agents can practice complex social interactions in a safe environment.
+48. **Value Alignment Workshop**: A tool that facilitates a structured process for a team to define and instill the desired values in an AI model.
+49. **"Moral Crumple Zone" Analyzer**: A tool to identify individuals or groups who might unfairly bear the blame for an AI system's failure.
+50. **AI Usage Policy Generator**: An application that helps organizations create clear and comprehensive acceptable use policies for their AI systems.
 
-## III. Intervention & Training Studies (41-60)
+## III. Agentic & Autonomous Systems Governance (51-75)
 
-41. **Cognitive Bias Modification (CBM) App**: A training paradigm designed to modify attentional or interpretive biases.
-42. **Working Memory Training Game**: A gamified application with adaptive difficulty for training working memory.
-43. **Mindfulness-Based Stress Reduction (MBSR) Guide**: A structured 8-week program delivering guided meditations and mindfulness exercises.
-44. **Attention Training Technique (ATT) App**: Delivers the ATT exercise, which involves selectively attending to different auditory stimuli.
-45. **Cognitive Restructuring Trainer**: An interactive app that teaches and allows users to practice challenging and changing negative thoughts.
-46. **Emotional Regulation Skills Trainer (DBT-based)**: Teaches skills like distress tolerance and emotional regulation from Dialectical Behavior Therapy.
-47. **Social Skills Training for Autism**: An app with modules for teaching emotion recognition, conversation skills, and perspective-taking.
-48. **In-vivo Exposure Guide for Anxiety**: A companion app for exposure therapy that provides a timer, SUDs rating prompts, and encouraging messages.
-49. **Implementation Intentions Tool**: Guides users to create "if-then" plans to achieve their goals, a behavioral change technique.
-50. **Gratitude Intervention App**: Prompts the user daily to perform a gratitude exercise, such as writing a gratitude letter.
-51. **Self-Compassion Training**: Delivers exercises based on Kristin Neff's self-compassion work, like the "Self-Compassion Break."
-52. **Problem-Solving Therapy Tool**: A structured intervention that teaches users how to effectively solve life problems.
-53. **Assertiveness Training App**: Provides psychoeducation and role-playing scenarios to build assertiveness skills.
-54. **Fear of Flying Intervention**: A self-guided program with psychoeducation, relaxation techniques, and simulated exposure for fear of flying.
-55. **Habit Reversal Training (HRT) for Tics/BFRBs**: A tool to help users track a target behavior and practice a competing response.
-56. **Imagery Rehearsal Therapy (IRT) for Nightmares**: Guides users to rescript their nightmares into more positive outcomes.
-57. **Memory Specificity Training (MeST)**: An intervention for depression that trains individuals to recall specific autobiographical memories.
-58. **Compassion-Focused Therapy (CFT) Exercises**: Delivers exercises like creating a "compassionate self" or practicing compassionate imagery.
-59. **Acceptance and Commitment Therapy (ACT) Tool**: An app with modules for each of the six core ACT processes (e.g., defusion, values).
-60. **Psychoeducation Delivery App**: A simple app to deliver educational content about a mental health condition, often used as a control condition.
+51. **Agent Trajectory Visualizer**: A tool that plots the sequence of actions taken by an autonomous agent in a 2D or 3D environment for review.
+52. **Recursive Self-Improvement Monitor**: A safety system designed to monitor and control AI agents that can modify their own code, to prevent runaway processes.
+53. **Instrumental Goal Detector**: A monitor that flags when an agent appears to be pursuing unintended instrumental goals (e.g., accumulating resources) that could be harmful.
+54. **Cooperative AI Framework**: A framework for training multiple AI agents to cooperate with each other safely and effectively.
+55. **Agentic "Power-Seeking" Monitor**: A system that tries to detect if an autonomous agent is trying to gain more power or control over its environment than it was designed to have.
+56. **"Off-Switch" Testing Protocol**: A standardized test to ensure that an autonomous agent's "off-switch" or shutdown mechanism is robust and cannot be disabled by the agent itself.
+57. **Corrigibility Tester**: A system that tests whether an AI agent is "corrigible," meaning it allows itself to be corrected or shut down by its human operators.
+58. **Multi-Agent Simulation for Emergent Behavior**: A simulation environment to study the emergent behavior of large populations of AI agents and detect potentially harmful collective actions.
+59. **Resource Allocation Governor**: A system that sets and enforces strict limits on the resources (e.g., compute, money, API calls) that an autonomous agent can use.
+60. **Tool Use Monitor for Agents**: A monitor that tracks the external tools and APIs that an agent is using, and can block access to unauthorized tools.
+61. **Agent Spawning Limiter**: A control system to prevent an agent from creating copies of itself without authorization.
+62. **Honeypot for Malicious Agents**: A system that creates an attractive but fake target to lure and study malicious autonomous agents.
+63. **Ethical Dilemma Simulator for Agents**: A simulator that presents autonomous agents with ethical dilemmas and records their choices for analysis.
+64. **Long-Term Planning Visualizer**: A tool that visualizes the long-term plans of an agent to help humans understand its intentions.
+65. **Agent Reputation System**: A system that tracks the past behavior of autonomous agents to establish a reputation score, which can be used to grant or deny privileges.
+66. **Deception Detector for Agents**: A model trained to detect if an AI agent is attempting to deceive its human operators.
+67. **Cross-Agent Communication Monitor**: A tool that monitors the communication between different AI agents to detect collusion or other undesirable behavior.
+68. **Value Learning Monitor**: A system that tracks how an agent's values or goals are changing over time as it learns.
+69. **Safe Exploration Framework**: A framework that allows an agent to explore a new environment while guaranteeing that it will not take any catastrophic actions.
+70. **"Tripwire" for Value Drift**: A system that automatically alerts operators if an agent's learned values drift too far from their initial settings.
+71. **Agent Containment Verifier**: A tool that formally verifies the robustness of the "sandbox" or containment measures designed to control a powerful AI.
+72. **Self-Explanation Module for Agents**: A module that requires an agent to explain its reasoning for any significant action it takes.
+73. **Coordinated Defense Against Rogue Agents**: A system for multiple friendly AI agents to coordinate a defense against a rogue or malicious agent.
+74. **"Last Will" for AI Agents**: A protocol that specifies what an agent should do in case of an impending shutdown, to ensure a safe and orderly state.
+75. **AI Treaty Compliance Monitor**: For future AIs, a system to monitor compliance with potential international treaties on the development of advanced AI.
 
-## IV. Sensory, Perceptual & Motor Tasks (61-80)
+## IV. Privacy & Data Governance (76-100)
 
-61. **Signal Detection Task**: Measures a user's ability to distinguish a "signal" from "noise."
-62. **Audiometry Test**: A simple hearing test that presents tones at different frequencies and volumes.
-63. **Contrast Sensitivity Test**: A vision test that measures the ability to distinguish between different levels of light and dark.
-64. **Fitts's Law Task**: A motor skills task that measures the time taken to point to a target as a function of its size and distance.
-65. **Time Perception Task**: Asks users to estimate the duration of a given interval or to reproduce it.
-66. **Emotional Recognition Task**: Presents facial expressions, voices, or body language and asks the user to identify the emotion.
-67. **Olfactory Test (requires hardware integration)**: A placeholder app to guide an administrator through an olfactory test and log responses.
-68. **Haptic Feedback Test**: A task to measure sensitivity to different patterns of vibration (requires specific hardware).
-69. **Motion Perception Task (Random Dot Kinematogram)**: Assesses the ability to perceive coherent motion from a field of moving dots.
-70. **Biological Motion Perception**: A task where users must identify a human figure from a series of moving points of light.
-71. **Pain Threshold/Tolerance Test (requires hardware)**: A program to control a stimulus (e.g., heat, pressure) and log participant ratings.
-72. **Bimanual Coordination Task**: Measures the ability to coordinate two hands to perform a task.
-73. **Gaze Cueing Task**: Measures how a depicted person's gaze direction automatically shifts the participant's attention.
-74. **Sound Localization Test**: Presents sounds from different spatial locations (requires stereo headphones) and asks the user to identify the source.
-75. **McGurk Effect Demonstrator**: An audiovisual task to study how visual information (lip movements) influences auditory perception.
-76. **Rhythm Perception/Reproduction Task**: Asks users to judge if two rhythms are the same or to tap out a presented rhythm.
-77. **Proprioception Test**: With eyes closed, asks a user to judge the position of one of their limbs (requires an administrator or specialized hardware).
-78. **Saccade/Anti-Saccade Task**: Measures eye movement control by asking users to look towards (pro-saccade) or away from (anti-saccade) a stimulus.
-79. **Smooth Pursuit Task**: Requires users to follow a smoothly moving target with their eyes.
-80. **Change Deafness Task**: An auditory analog to change blindness, where users must detect a change in an auditory scene.
-
-## V. Niche & Advanced Paradigms (81-100)
-
-81. **Implicit Association Test (IAT)**: Measures implicit biases by comparing reaction times in sorting words and images into categories.
-82. **Affective Picture Viewing (IAPS-based)**: Presents a series of emotionally evocative images and records ratings of valence and arousal.
-83. **Moral Dilemma Scenarios**: Presents users with moral dilemmas (e.g., trolley problem) and records their judgments and reasoning.
-84. **Delay Discounting Task**: Assesses impulsivity by having users choose between a smaller, immediate reward and a larger, delayed reward.
-85. **Effort Discounting Task**: Measures motivation by having users choose between a low-effort, low-reward task and a high-effort, high-reward task.
-86. **Reading Span (RSPAN) Task**: A complex working memory task that combines sentence verification with word recall.
-87. **Autobiographical Memory Test (AMT)**: Cues users with words and asks them to retrieve a specific personal memory associated with that word.
-88. **Faux Pas Recognition Test**: Assesses theory of mind by presenting social stories and asking if anyone said something they shouldn't have.
-89. **Conditioned Fear Paradigm (placeholder)**: A template for a fear conditioning study, involving pairing a neutral stimulus with an aversive one (e.g., a loud noise).
-90. **Directed Forgetting Task**: Tests cognitive control by instructing users to remember some items and forget others.
-91. **False Memory Task (DRM Paradigm)**: Presents lists of related words and then tests recall for a non-presented "lure" word.
-92. **Subliminal Priming Paradigm**: Presents a stimulus so briefly that it is not consciously perceived, to see its effect on a subsequent task.
-93. **Gist Reasoning Task**: Assesses the ability to derive abstract meaning from complex information.
-94. **Probabilistic Reversal Learning**: A task where the "correct" choice periodically reverses, testing cognitive flexibility and learning under uncertainty.
-95. **Cyberball Game**: A virtual ball-tossing game used to study the effects of social exclusion and ostracism.
-96. **Public Goods Game**: An economics game used to study cooperation and altruism.
-97. **Dictator/Ultimatum Game**: Simple economics games to measure fairness and prosocial behavior.
-98. **Trust Game**: An economics game to measure trust and reciprocity between anonymous partners.
-99. **Contingency Learning Task**: A task where users learn the relationship between different cues and outcomes.
-100. **Spence Children's Anxiety Scale (SCAS) App**: A digital, self-administered version of a common psychological questionnaire.
+76. **Federated Learning Orchestrator**: A platform for managing the training of models using federated learning, ensuring that raw data never leaves the user's device.
+77. **Differential Privacy Auditor**: A tool that measures the level of privacy protection offered by a system that uses differential privacy.
+78. **Data Anonymization Pipeline**: A tool that automatically anonymizes a dataset before it is used for training, removing PII and other sensitive information.
+79. **Data Usage and Lineage Tracker**: A system that tracks where data came from, how it has been used, and who has accessed it.
+80. **Privacy Policy Compliance Scanner**: A tool that scans a company's privacy policy and compares it against their actual data handling practices.
+81. **Homomorphic Encryption Gateway**: A system that allows computations to be performed on encrypted data without decrypting it first, enhancing privacy.
+82. **"Right to be Forgotten" Handler**: An automated system for processing user requests to have their data deleted, as required by regulations like GDPR.
+83. **Data Sovereignty Enforcer**: A tool that ensures data is stored and processed in the geographic location required by law or user preference.
+84. **Privacy-Preserving Synthetic Data Generator**: A tool that creates a synthetic dataset that has the same statistical properties as a real dataset, but contains no real user data.
+85. **Secure Multi-Party Computation (SMPC) Framework**: A framework for multiple parties to jointly compute a function over their inputs, while keeping those inputs private.
+86. **AI-Powered Data Discovery and Classification**: A tool that automatically scans an organization's data stores to find and classify sensitive data.
+87. **Consent Management Platform**: A platform for managing user consent for data processing, allowing users to easily grant and revoke consent.
+88. **Privacy Impact Assessment (PIA) Generator**: A tool that helps organizations conduct PIAs for new AI projects, identifying and mitigating privacy risks.
+89. **Confidential Computing Environment for AI**: A secure environment that uses hardware-level protection to isolate AI models and data while they are being processed.
+90. **AI Model Inversion Attack Detector**: A security tool that detects if an attacker is trying to "invert" a model to extract its training data.
+91. **Membership Inference Attack Monitor**: A system that detects attempts to determine if a specific individual's data was used to train a model.
+92. **Data Minimization Recommender**: A tool that analyzes an AI project and recommends ways to reduce the amount of data it collects and stores.
+93. **Privacy-Enhancing Technology (PET) Dashboard**: A dashboard that provides a unified view of all the PETs being used in an organization's AI systems.
+94. **AI-Powered Phishing Detector for Internal Threats**: A tool that analyzes internal communications to detect phishing attempts orchestrated by malicious insiders or compromised accounts.
+95. **Dark Pattern Detector for Websites**: A tool that uses an LLM to scan websites for "dark patterns" - user interfaces designed to trick users into giving up their data.
+96. **Smart Contract for Data Usage**: A system that uses blockchain-based smart contracts to automatically enforce data usage agreements.
+97. **Decentralized AI Identity System**: A system that allows users to control their own digital identity when interacting with AI systems, without relying on a central authority.
+98. **Zero-Knowledge Proof (ZKP) Verifier for AI**: A system that allows an AI model to prove that it has a certain property (e.g., it was trained on a certain dataset) without revealing any other information about itself.
+99. **AI-Powered De-identification Certificate**: A tool that analyzes a dataset and provides a certificate stating that it has been properly de-identified.
+100. **Global AI Incident Database**: A public database that collects and shares information about AI-related incidents and near-misses to help the community learn from past mistakes.
