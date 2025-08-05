@@ -1,0 +1,55 @@
+This incident highlighted several important development lessons:
+
+1.  **Environment Configuration:**
+    *   Storing configuration files in a centralized and easily accessible locat
+ion is crucial. Moving `environment.txt` to the project root from a subdirectory
+ simplified path management and reduced complexity in the scripts.
+    *   When scripts need to be run from different directories, it's important t
+o have a robust way to determine the project root. The `PRISM_QUANTA_ROOT` envir
+onment variable, set by a dedicated `setup_environment.sh` script, provides a re
+liable way to do this.
+
+2.  **Script Portability:**
+    *   Scripts should not rely on the current working directory to locate files
+. Using absolute paths based on a project root variable makes scripts more porta
+ble and less prone to errors.
+    *   Hardcoding relative paths like `../` or `./` can lead to issues when scr
+ipts are run from unexpected locations.
+
+3.  **Dependency Management:**
+    *   The `code_analysis.sh` script failed because the `bc` command was not in
+stalled. This highlights the importance of identifying and documenting all scrip
+t dependencies.
+
+4.  **Error Handling and Debugging:**
+    *   The `set -u` option in the scripts was helpful in identifying unbound va
+riables, but it also made the scripts more brittle. It's important to find a bal
+ance between strict error checking and script robustness.
+    *   Adding debug statements (e.g., `echo` commands to print variable values)
+ was a useful technique for identifying issues with variable expansion and pathi
+ng.
+
+5.  **Testing:**
+    *   Creating a dedicated test script (`test_jules.sh`) was a good way to ver
+ify the fixes and ensure that the scripts work as expected. This is a good pract
+ice to follow for any future development.
+
+[LESSON LEARNED]
+Date: 2024-05-21 12:00:00
+Topic: Dangers of Overly Broad Cleanup Logic in Automation Scripts
+
+Occurrence:
+A demonstration script (test_gemini.sh) was implemented with an overly aggressiv
+e cleanup function. The function was configured to remove entire project directo
+ries (e.g., /logs, /memory, /config) using 'rm -rf'. This was intended to reset
+the environment but had the severe side effect of deleting persistent project da
+ta, including configuration files and historical logs.
+
+Remediation:
+The cleanup logic was refactored to be highly specific. Instead of deleting dire
+ctories, the script now maintains a list of the exact temporary files and file p
+atterns (e.g., response_*.txt) it generates. The cleanup function iterates throu
+gh this list, removing only the specified items. This surgical approach ensures
+that the script's cleanup process is non-destructive to the project's integrity
+and only affects files created during its own execution. This prevents data loss
+ and makes the automation safer and more reliable.
