@@ -1,4 +1,5 @@
 #include "test_framework.h"
+#define TEMPLATE_GENERATOR_TEST
 #include "../template_generator.cpp" // Include the source directly for testing
 #include <filesystem>
 #include <fstream>
