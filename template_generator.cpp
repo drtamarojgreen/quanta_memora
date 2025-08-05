@@ -808,6 +808,7 @@ ProjectConfig getProjectConfig() {
     return config;
 }
 
+#ifndef TEMPLATE_GENERATOR_TEST
 int main() {
     try {
         ProjectConfig config = getProjectConfig();
@@ -839,3 +840,4 @@ int main() {
         return 1;
     }
 }
+#endif // TEMPLATE_GENERATOR_TEST

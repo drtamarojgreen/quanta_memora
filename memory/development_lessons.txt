@@ -53,3 +53,14 @@ gh this list, removing only the specified items. This surgical approach ensures
 that the script's cleanup process is non-destructive to the project's integrity
 and only affects files created during its own execution. This prevents data loss
  and makes the automation safer and more reliable.
+
+[LESSON LEARNED]
+Date: 2025-08-05 09:32:00
+Topic: Handling Binary Files in Feature Branches
+Occurrence: During several development cycles, AI agents were repeatedly reminded to exclude binary files from their feature branches. While well-intentioned, these constant reminders proved to be an inefficient and distracting approach. The agents would often spend valuable time acknowledging the instruction rather than focusing on the core task. This highlighted the need for a more systematic and automated solution to prevent binary files from being committed.
+
+Remediation:
+To address this, the following strategies were developed to create a more robust and efficient development process:
+1.  **Pre-commit Hooks:** A pre-commit hook was implemented to automatically check for binary files before a commit is finalized. If a binary file is detected, the commit is aborted, and the agent is notified with a clear message explaining the issue. This provides immediate feedback and prevents the problem from occurring in the first place.
+2.  **.gitignore:** The project's .gitignore file was updated to explicitly ignore common binary file types (e.g., *.o, *.a, *.so). This ensures that these files are not accidentally staged or committed, reducing the cognitive load on the agent.
+3.  **Agent Education:** The AI agent's instructions were updated to include a clear definition of binary files and guidance on how to identify and exclude them. This was included in the project's AGENTS.md file, providing a persistent and easily accessible reference for the agent.
