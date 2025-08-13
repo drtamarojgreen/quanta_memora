@@ -62,6 +62,7 @@ struct ProjectConfig {
     bool useCMake;
     bool includeTests;
     bool includeGitIgnore;
+    bool includeLikertScale;
     std::vector<std::string> dependencies;
 };
 
@@ -133,6 +134,11 @@ public:
             generateGitIgnore();
         }
         
+        if (config.includeLikertScale) {
+            writeFile(config.name + "/include/LikertScale.h", generateLikertScaleHeader());
+            writeFile(config.name + "/src/LikertScale.cpp", generateLikertScaleImplementation());
+        }
+
         generateReadme();
         generateLicense();
         
@@ -169,13 +175,36 @@ private:
     }
     
     std::string generateConsoleMain() {
-        return "#include <iostream>\n"
-               "#include \"../include/" + config.name + ".h\"\n\n"
-               "int main() {\n"
-               "    std::cout << \"Launching " + config.className + " Application...\" << std::endl;\n\n"
-               "    " + config.className + " app;\n"
-               "    return app.run();\n"
-               "}\n";
+        std::string content = "#include <iostream>\n"
+                             "#include \"../include/" + config.name + ".h\"\n";
+
+        if (config.includeLikertScale) {
+            content += "#include \"../include/LikertScale.h\"\n"
+                       "#include <vector>\n";
+        }
+
+        content += "\nint main() {\n"
+                   "    std::cout << \"Launching " + config.className + " Application...\" << std::endl;\n\n";
+
+        if (config.includeLikertScale) {
+            content += "    // Example usage of LikertScale\n"
+                       "    std::vector<std::string> options = {\n"
+                       "        \"Strongly Disagree\",\n"
+                       "        \"Disagree\",\n"
+                       "        \"Neutral\",\n"
+                       "        \"Agree\",\n"
+                       "        \"Strongly Agree\"\n"
+                       "    };\n"
+                       "    LikertScale scale(\"The software was easy to use.\", options);\n"
+                       "    int response = scale.displayAndGetResponse();\n"
+                       "    std::cout << \"\\nYou selected option: \" << response << \" - \" << options[response - 1] << std::endl;\n\n";
+        }
+
+        content += "    " + config.className + " app;\n"
+                   "    return app.run();\n"
+                   "}\n";
+
+        return content;
     }
     
     std::string generateGuiMain() {
@@ -432,22 +461,28 @@ private:
                              "# Include directories\n"
                              "include_directories(include)\n\n";
         
+        std::string sources;
         if (config.type == ProjectType::CONSOLE_APP || config.type == ProjectType::GUI_APP) {
+            sources = "    src/main.cpp\n    src/" + config.name + ".cpp\n";
+            if (config.includeLikertScale) {
+                sources += "    src/LikertScale.cpp\n";
+            }
             content += "# Executable\n"
-                      "add_executable(" + config.name + "\n"
-                      "    src/main.cpp\n"
-                      "    src/" + config.name + ".cpp\n"
-                      ")\n\n";
+                      "add_executable(" + config.name + "\n" + sources + ")\n\n";
         } else if (config.type == ProjectType::STATIC_LIBRARY) {
+            sources = "    src/" + config.name + ".cpp\n";
+            if (config.includeLikertScale) {
+                sources += "    src/LikertScale.cpp\n";
+            }
             content += "# Static Library\n"
-                      "add_library(" + config.name + " STATIC\n"
-                      "    src/" + config.name + ".cpp\n"
-                      ")\n\n";
+                      "add_library(" + config.name + " STATIC\n" + sources + ")\n\n";
         } else if (config.type == ProjectType::SHARED_LIBRARY) {
+            sources = "    src/" + config.name + ".cpp\n";
+            if (config.includeLikertScale) {
+                sources += "    src/LikertScale.cpp\n";
+            }
             content += "# Shared Library\n"
-                      "add_library(" + config.name + " SHARED\n"
-                      "    src/" + config.name + ".cpp\n"
-                      ")\n\n";
+                      "add_library(" + config.name + " SHARED\n" + sources + ")\n\n";
         }
         
         if (config.includeTests) {
@@ -734,6 +769,64 @@ private:
         
         writeFile(filename, content);
     }
+
+private:
+    std::string generateLikertScaleHeader() {
+        return "#ifndef LIKERT_SCALE_H\n"
+               "#define LIKERT_SCALE_H\n\n"
+               "#include <string>\n"
+               "#include <vector>\n\n"
+               "/**\n"
+               " * @class LikertScale\n"
+               " * @brief A simple class to display a Likert scale question and get a response.\n"
+               " */\n"
+               "class LikertScale {\n"
+               "public:\n"
+               "    /**\n"
+               "     * @brief Construct a new Likert Scale object\n"
+               "     * @param question The question to ask the user.\n"
+               "     * @param options The list of options for the scale (e.g., \"Strongly Disagree\" to \"Strongly Agree\").\n"
+               "     */\n"
+               "    LikertScale(const std::string& question, const std::vector<std::string>& options);\n\n"
+               "    /**\n"
+               "     * @brief Displays the question and options, then waits for and validates user input.\n"
+               "     * @return The user's choice as an integer (1-based index).\n"
+               "     */\n"
+               "    int displayAndGetResponse();\n\n"
+               "private:\n"
+               "    std::string question_;\n"
+               "    std::vector<std::string> options_;\n"
+               "};\n\n"
+               "#endif // LIKERT_SCALE_H\n";
+    }
+
+    std::string generateLikertScaleImplementation() {
+        return "#include \"../include/LikertScale.h\"\n"
+               "#include <iostream>\n"
+               "#include <limits>\n\n"
+               "LikertScale::LikertScale(const std::string& question, const std::vector<std::string>& options)\n"
+               "    : question_(question), options_(options) {}\n\n"
+               "int LikertScale::displayAndGetResponse() {\n"
+               "    std::cout << \"\\n\" << question_ << std::endl;\n"
+               "    for (size_t i = 0; i < options_.size(); ++i) {\n"
+               "        std::cout << \"  \" << (i + 1) << \". \" << options_[i] << std::endl;\n"
+               "    }\n\n"
+               "    int response = 0;\n"
+               "    while (true) {\n"
+               "        std::cout << \"Enter your choice (1-\" << options_.size() << \"): \";\n"
+               "        std::cin >> response;\n\n"
+               "        if (std::cin.good() && response >= 1 && response <= static_cast<int>(options_.size())) {\n"
+               "            // Clear the input buffer\n"
+               "            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\\n');\n"
+               "            return response;\n"
+               "        } else {\n"
+               "            std::cin.clear();\n"
+               "            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\\n');\n"
+               "            std::cout << \"Invalid input. Please enter a number between 1 and \" << options_.size() << \".\" << std::endl;\n"
+               "        }\n"
+               "    }\n"
+               "}\n";
+    }
 };
 
 // Interactive configuration function
@@ -804,6 +897,11 @@ ProjectConfig getProjectConfig() {
     std::cout << "Include .gitignore? (Y/n): ";
     std::getline(std::cin, input);
     config.includeGitIgnore = !(input == "n" || input == "N" || input == "no");
+
+    // Likert Scale
+    std::cout << "Include Likert Scale module for surveys? (y/N): ";
+    std::getline(std::cin, input);
+    config.includeLikertScale = (input == "y" || input == "Y" || input == "yes");
     
     return config;
 }
