@@ -789,6 +789,7 @@ private:
         
         writeFile(filename, content);
     }
+
 private:
     std::string generateLikertScaleHeader() {
         return "#ifndef LIKERT_SCALE_H\n"
