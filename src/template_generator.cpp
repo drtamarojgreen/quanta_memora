@@ -8,6 +8,8 @@
 #include <cstddef>
 #include <cctype>
 
+#include "TemplateLoader.h"
+
 namespace fs = std::filesystem;
 
 namespace StringUtils {
@@ -38,6 +40,19 @@ std::string camelToSnake(const std::string& input) {
             result += '_';
         }
         result += std::tolower(input[i]);
+    }
+    return result;
+}
+
+std::string escapeSql(const std::string& input) {
+    std::string result;
+    result.reserve(input.length());
+    for (char c : input) {
+        if (c == '\'') {
+            result += "''";
+        } else {
+            result += c;
+        }
     }
     return result;
 }
@@ -72,7 +87,8 @@ struct ProjectConfig {
 
 class TemplateGenerator {
 private:
-    ProjectConfig config;
+    const ProjectConfig& config_;
+    const TemplateLoader& loader_;
     
     void createDirectory(const std::string& path) {
         if (!fs::exists(path)) {
@@ -80,7 +96,7 @@ private:
             std::cout << "Created directory: " << path << std::endl;
         }
     }
-    
+
     void writeFile(const std::string& filename, const std::string& content) {
         std::ofstream file(filename);
         if (file.is_open()) {
@@ -92,28 +108,27 @@ private:
     }
 
 public:
-    void setConfig(const ProjectConfig& cfg) {
-        config = cfg;
-    }
-    
+    TemplateGenerator(const ProjectConfig& config, const TemplateLoader& loader)
+        : config_(config), loader_(loader) {}
+
     void generateProject() {
         std::cout << "\n=== Generating Project Structure ===\n";
         
         // Create project directory
-        createDirectory(config.name);
+        createDirectory(config_.name);
         
         // Create subdirectories based on project type
-        if (config.type != ProjectType::HEADER_ONLY) {
-            createDirectory(config.name + "/src");
+        if (config_.type != ProjectType::HEADER_ONLY) {
+            createDirectory(config_.name + "/src");
         }
-        createDirectory(config.name + "/include");
+        createDirectory(config_.name + "/include");
         
-        if (config.includeTests) {
-            createDirectory(config.name + "/tests");
+        if (config_.includeTests) {
+            createDirectory(config_.name + "/tests");
         }
         
-        if (config.useCMake) {
-            createDirectory(config.name + "/build");
+        if (config_.useCMake) {
+            createDirectory(config_.name + "/build");
         }
         
         // Generate files
@@ -154,8 +169,8 @@ public:
         generateReadme();
         generateLicense();
         
-        std::cout << "\nProject '" << config.name << "' generated successfully!\n";
-        std::cout << "Navigate to the project directory: cd " << config.name << std::endl;
+        std::cout << "\nProject '" << config_.name << "' generated successfully!\n";
+        std::cout << "Navigate to the project directory: cd " << config_.name << std::endl;
     }
     
 private:
@@ -167,9 +182,9 @@ private:
         }
         
         std::string content;
-        std::string filename = config.name + "/src/main.cpp";
+        std::string filename = config_.name + "/src/main.cpp";
         
-        switch (config.type) {
+        switch (config_.type) {
             case ProjectType::CONSOLE_APP:
                 content = generateConsoleMain();
                 break;
@@ -188,17 +203,17 @@ private:
     
     std::string generateConsoleMain() {
         std::string content = "#include <iostream>\n"
-                             "#include \"../include/" + config.name + ".h\"\n";
+                             "#include \"../include/" + config_.name + ".h\"\n";
 
-        if (config.includeLikertScale) {
+        if (config_.includeLikertScale) {
             content += "#include \"../include/LikertScale.h\"\n"
                        "#include <vector>\n";
         }
 
         content += "\nint main() {\n"
-                   "    std::cout << \"Launching " + config.className + " Application...\" << std::endl;\n\n";
+                   "    std::cout << \"Launching " + config_.className + " Application...\" << std::endl;\n\n";
 
-        if (config.includeLikertScale) {
+        if (config_.includeLikertScale) {
             content += "    // Example usage of LikertScale\n"
                        "    std::vector<std::string> options = {\n"
                        "        \"Strongly Disagree\",\n"
@@ -212,7 +227,7 @@ private:
                        "    std::cout << \"\\nYou selected option: \" << response << \" - \" << options[response - 1] << std::endl;\n\n";
         }
 
-        content += "    " + config.className + " app;\n"
+        content += "    " + config_.className + " app;\n"
                    "    return app.run();\n"
                    "}\n";
 
@@ -221,30 +236,30 @@ private:
     
     std::string generateGuiMain() {
         return "#include <iostream>\n"
-               "#include \"../include/" + config.name + ".h\"\n\n"
+               "#include \"../include/" + config_.name + ".h\"\n\n"
                "// TODO: Include GUI framework headers (Qt, GTK, etc.)\n\n"
                "int main(int argc, char* argv[]) {\n"
-               "    std::cout << \"Launching " + config.className + " GUI Application...\" << std::endl;\n\n"
+               "    std::cout << \"Launching " + config_.className + " GUI Application...\" << std::endl;\n\n"
                "    // TODO: Initialize GUI framework\n"
-               "    " + config.className + " app;\n"
+               "    " + config_.className + " app;\n"
                "    return app.run();\n"
                "}\n";
     }
     
     std::string generateTestMain() {
         return "#include <iostream>\n"
-               "#include \"../include/" + config.name + ".h\"\n\n"
+               "#include \"../include/" + config_.name + ".h\"\n\n"
                "// Simple test runner - consider using Google Test, Catch2, or similar\n"
                "int main() {\n"
-               "    std::cout << \"Running " + config.className + " Tests...\" << std::endl;\n\n"
-               "    " + config.className + "Test test;\n"
+               "    std::cout << \"Running " + config_.className + " Tests...\" << std::endl;\n\n"
+               "    " + config_.className + "Test test;\n"
                "    return test.runAllTests();\n"
                "}\n";
     }
     
     void generateHeaderFile() {
-        std::string guard = StringUtils::toUpper(config.name) + "_H";
-        std::string filename = config.name + "/include/" + config.name + ".h";
+        std::string guard = StringUtils::toUpper(config_.name) + "_H";
+        std::string filename = config_.name + "/include/" + config_.name + ".h";
         
         std::string content = "#ifndef " + guard + "\n"
                              "#define " + guard + "\n\n"
@@ -252,18 +267,18 @@ private:
                              "#include <vector>\n"
                              "#include <memory>\n\n";
         
-        if (!config.description.empty()) {
-            content += "/**\n * " + config.description + "\n";
-            if (!config.author.empty()) {
-                content += " * @author " + config.author + "\n";
+        if (!config_.description.empty()) {
+            content += "/**\n * " + config_.description + "\n";
+            if (!config_.author.empty()) {
+                content += " * @author " + config_.author + "\n";
             }
-            if (!config.version.empty()) {
-                content += " * @version " + config.version + "\n";
+            if (!config_.version.empty()) {
+                content += " * @version " + config_.version + "\n";
             }
             content += " */\n";
         }
         
-        switch (config.type) {
+        switch (config_.type) {
             case ProjectType::CONSOLE_APP:
             case ProjectType::GUI_APP:
                 content += generateAppClass();
@@ -283,13 +298,13 @@ private:
     }
     
     std::string generateAppClass() {
-        return "class " + config.className + " {\n"
+        return "class " + config_.className + " {\n"
                "private:\n"
                "    std::string appName;\n"
                "    bool isRunning;\n\n"
                "public:\n"
-               "    " + config.className + "();\n"
-               "    ~" + config.className + "();\n\n"
+               "    " + config_.className + "();\n"
+               "    ~" + config_.className + "();\n\n"
                "    int run();\n"
                "    void shutdown();\n"
                "    \n"
@@ -301,31 +316,31 @@ private:
     }
     
     std::string generateLibraryClass() {
-        return "class " + config.className + " {\n"
+        return "class " + config_.className + " {\n"
                "private:\n"
                "    // Private members\n\n"
                "public:\n"
-               "    " + config.className + "();\n"
-               "    ~" + config.className + "();\n\n"
+               "    " + config_.className + "();\n"
+               "    ~" + config_.className + "();\n\n"
                "    // Public API\n"
                "    void process();\n"
                "    std::string getVersion() const;\n"
                "};\n\n"
                "// Utility functions\n"
-               "namespace " + StringUtils::toLower(config.className) + "_utils {\n"
+               "namespace " + StringUtils::toLower(config_.className) + "_utils {\n"
                "    void helperFunction();\n"
                "}\n";
     }
     
     std::string generateTestClass() {
-        return "class " + config.className + "Test {\n"
+        return "class " + config_.className + "Test {\n"
                "private:\n"
                "    int passedTests;\n"
                "    int failedTests;\n\n"
                "    void assert(bool condition, const std::string& testName);\n\n"
                "public:\n"
-               "    " + config.className + "Test();\n"
-               "    ~" + config.className + "Test();\n\n"
+               "    " + config_.className + "Test();\n"
+               "    ~" + config_.className + "Test();\n\n"
                "    int runAllTests();\n"
                "    void testBasicFunctionality();\n"
                "    void testEdgeCases();\n"
@@ -334,12 +349,12 @@ private:
     }
     
     void generateImplementationFile() {
-        std::string filename = config.name + "/src/" + config.name + ".cpp";
-        std::string content = "#include \"../include/" + config.name + ".h\"\n"
+        std::string filename = config_.name + "/src/" + config_.name + ".cpp";
+        std::string content = "#include \"../include/" + config_.name + ".h\"\n"
                              "#include <iostream>\n"
                              "#include <stdexcept>\n\n";
         
-        switch (config.type) {
+        switch (config_.type) {
             case ProjectType::CONSOLE_APP:
             case ProjectType::GUI_APP:
                 content += generateAppImplementation();
@@ -357,24 +372,24 @@ private:
     }
     
     std::string generateAppImplementation() {
-        return config.className + "::" + config.className + "()\n"
-               "    : appName(\"" + config.className + "\"), isRunning(false) {\n"
+        return config_.className + "::" + config_.className + "()\n"
+               "    : appName(\"" + config_.className + "\"), isRunning(false) {\n"
                "    // Constructor implementation\n"
                "}\n\n"
-               + config.className + "::~" + config.className + "() {\n"
+               + config_.className + "::~" + config_.className + "() {\n"
                "    cleanup();\n"
                "}\n\n"
-               "int " + config.className + "::run() {\n"
+               "int " + config_.className + "::run() {\n"
                "    try {\n"
                "        initialize();\n"
                "        isRunning = true;\n"
                "        \n"
-               "        std::cout << \"Running " + config.description + "...\" << std::endl;\n"
+               "        std::cout << \"Running " + config_.description + "...\" << std::endl;\n"
                "        \n"
                "        // Main application loop\n"
                "        while (isRunning) {\n"
                "            update();\n"
-               "            // TODO: Implement main logic: " + config.goal + "\n"
+               "            // TODO: Implement main logic: " + config_.goal + "\n"
                "            break; // Remove this for continuous running\n"
                "        }\n"
                "        \n"
@@ -384,38 +399,38 @@ private:
                "        return 1;\n"
                "    }\n"
                "}\n\n"
-               "void " + config.className + "::initialize() {\n"
+               "void " + config_.className + "::initialize() {\n"
                "    std::cout << \"Initializing \" << appName << \"...\" << std::endl;\n"
                "    // TODO: Add initialization logic\n"
                "}\n\n"
-               "void " + config.className + "::update() {\n"
+               "void " + config_.className + "::update() {\n"
                "    // TODO: Add update logic\n"
                "}\n\n"
-               "void " + config.className + "::cleanup() {\n"
+               "void " + config_.className + "::cleanup() {\n"
                "    std::cout << \"Cleaning up \" << appName << \"...\" << std::endl;\n"
                "    // TODO: Add cleanup logic\n"
                "}\n\n"
-               "void " + config.className + "::shutdown() {\n"
+               "void " + config_.className + "::shutdown() {\n"
                "    isRunning = false;\n"
                "}\n";
     }
     
     std::string generateLibraryImplementation() {
-        return config.className + "::" + config.className + "() {\n"
+        return config_.className + "::" + config_.className + "() {\n"
                "    // Constructor implementation\n"
                "}\n\n"
-               + config.className + "::~" + config.className + "() {\n"
+               + config_.className + "::~" + config_.className + "() {\n"
                "    // Destructor implementation\n"
                "}\n\n"
-               "void " + config.className + "::process() {\n"
-               "    std::cout << \"Processing with " + config.className + "...\" << std::endl;\n"
-               "    // TODO: Implement core functionality: " + config.goal + "\n"
+               "void " + config_.className + "::process() {\n"
+               "    std::cout << \"Processing with " + config_.className + "...\" << std::endl;\n"
+               "    // TODO: Implement core functionality: " + config_.goal + "\n"
                "}\n\n"
-               "std::string " + config.className + "::getVersion() const {\n"
-               "    return \"" + config.version + "\";\n"
+               "std::string " + config_.className + "::getVersion() const {\n"
+               "    return \"" + config_.version + "\";\n"
                "}\n\n"
                "// Utility functions implementation\n"
-               "namespace " + StringUtils::toLower(config.className) + "_utils {\n"
+               "namespace " + StringUtils::toLower(config_.className) + "_utils {\n"
                "    void helperFunction() {\n"
                "        // TODO: Implement helper functionality\n"
                "    }\n"
@@ -423,15 +438,15 @@ private:
     }
     
     std::string generateTestImplementation() {
-        return config.className + "Test::" + config.className + "Test()\n"
+        return config_.className + "Test::" + config_.className + "Test()\n"
                "    : passedTests(0), failedTests(0) {\n"
                "    // Test constructor\n"
                "}\n\n"
-               + config.className + "Test::~" + config.className + "Test() {\n"
+               + config_.className + "Test::~" + config_.className + "Test() {\n"
                "    // Test destructor\n"
                "}\n\n"
-               "int " + config.className + "Test::runAllTests() {\n"
-               "    std::cout << \"Running all tests for " + config.className + "...\" << std::endl;\n"
+               "int " + config_.className + "Test::runAllTests() {\n"
+               "    std::cout << \"Running all tests for " + config_.className + "...\" << std::endl;\n"
                "    \n"
                "    testBasicFunctionality();\n"
                "    testEdgeCases();\n"
@@ -439,15 +454,15 @@ private:
                "    printResults();\n"
                "    return (failedTests == 0) ? 0 : 1;\n"
                "}\n\n"
-               "void " + config.className + "Test::testBasicFunctionality() {\n"
+               "void " + config_.className + "Test::testBasicFunctionality() {\n"
                "    // TODO: Implement basic functionality tests\n"
                "    assert(true, \"Basic functionality test\");\n"
                "}\n\n"
-               "void " + config.className + "Test::testEdgeCases() {\n"
+               "void " + config_.className + "Test::testEdgeCases() {\n"
                "    // TODO: Implement edge case tests\n"
                "    assert(true, \"Edge cases test\");\n"
                "}\n\n"
-               "void " + config.className + "Test::assert(bool condition, const std::string& testName) {\n"
+               "void " + config_.className + "Test::assert(bool condition, const std::string& testName) {\n"
                "    if (condition) {\n"
                "        std::cout << \"[PASS] \" << testName << std::endl;\n"
                "        passedTests++;\n"
@@ -456,7 +471,7 @@ private:
                "        failedTests++;\n"
                "    }\n"
                "}\n\n"
-               "void " + config.className + "Test::printResults() {\n"
+               "void " + config_.className + "Test::printResults() {\n"
                "    std::cout << \"\\nTest Results:\" << std::endl;\n"
                "    std::cout << \"Passed: \" << passedTests << std::endl;\n"
                "    std::cout << \"Failed: \" << failedTests << std::endl;\n"
@@ -465,68 +480,68 @@ private:
     }
     
     void generateCMakeFile() {
-        std::string filename = config.name + "/CMakeLists.txt";
+        std::string filename = config_.name + "/CMakeLists.txt";
         std::string content = "cmake_minimum_required(VERSION 3.12)\n"
-                             "project(" + config.name + " VERSION " + config.version + ")\n\n"
+                             "project(" + config_.name + " VERSION " + config_.version + ")\n\n"
                              "set(CMAKE_CXX_STANDARD 17)\n"
                              "set(CMAKE_CXX_STANDARD_REQUIRED ON)\n\n"
                              "# Include directories\n"
                              "include_directories(include)\n\n";
         
         std::string sources;
-        if (config.type == ProjectType::CONSOLE_APP || config.type == ProjectType::GUI_APP) {
-            sources = "    src/main.cpp\n    src/" + config.name + ".cpp\n";
-            if (config.includeLikertScale) {
+        if (config_.type == ProjectType::CONSOLE_APP || config_.type == ProjectType::GUI_APP) {
+            sources = "    src/main.cpp\n    src/" + config_.name + ".cpp\n";
+            if (config_.includeLikertScale) {
                 sources += "    src/LikertScale.cpp\n";
             }
             content += "# Executable\n"
-                      "add_executable(" + config.name + "\n" + sources + ")\n\n";
-        } else if (config.type == ProjectType::STATIC_LIBRARY) {
-            sources = "    src/" + config.name + ".cpp\n";
-            if (config.includeLikertScale) {
+                      "add_executable(" + config_.name + "\n" + sources + ")\n\n";
+        } else if (config_.type == ProjectType::STATIC_LIBRARY) {
+            sources = "    src/" + config_.name + ".cpp\n";
+            if (config_.includeLikertScale) {
                 sources += "    src/LikertScale.cpp\n";
             }
             content += "# Static Library\n"
-                      "add_library(" + config.name + " STATIC\n" + sources + ")\n\n";
-        } else if (config.type == ProjectType::SHARED_LIBRARY) {
-            sources = "    src/" + config.name + ".cpp\n";
-            if (config.includeLikertScale) {
+                      "add_library(" + config_.name + " STATIC\n" + sources + ")\n\n";
+        } else if (config_.type == ProjectType::SHARED_LIBRARY) {
+            sources = "    src/" + config_.name + ".cpp\n";
+            if (config_.includeLikertScale) {
                 sources += "    src/LikertScale.cpp\n";
             }
             content += "# Shared Library\n"
-                      "add_library(" + config.name + " SHARED\n" + sources + ")\n\n";
+                      "add_library(" + config_.name + " SHARED\n" + sources + ")\n\n";
         }
         
-        if (config.includeTests) {
+        if (config_.includeTests) {
             content += "# Tests\n"
                       "enable_testing()\n"
-                      "add_executable(" + config.name + "_tests\n"
-                      "    tests/test_" + config.name + ".cpp\n"
+                      "add_executable(" + config_.name + "_tests\n"
+                      "    tests/test_" + config_.name + ".cpp\n"
                       ")\n"
-                      "add_test(NAME " + config.name + "_tests COMMAND " + config.name + "_tests)\n\n";
+                      "add_test(NAME " + config_.name + "_tests COMMAND " + config_.name + "_tests)\n\n";
         }
         
         content += "# Compiler flags\n"
-                  "target_compile_options(" + config.name + " PRIVATE\n"
+                  "target_compile_options(" + config_.name + " PRIVATE\n"
                   "    -Wall -Wextra -Wpedantic\n"
                   ")\n\n"
                   "# Installation\n"
-                  "install(TARGETS " + config.name + " DESTINATION bin)\n"
-                  "install(FILES include/" + config.name + ".h DESTINATION include)\n";
+                  "install(TARGETS " + config_.name + " DESTINATION bin)\n"
+                  "install(FILES include/" + config_.name + ".h DESTINATION include)\n";
         
         writeFile(filename, content);
     }
     
     void generateMakefile() {
-        std::string filename = config.name + "/Makefile";
-        std::string content = "# Makefile for " + config.name + "\n\n"
+        std::string filename = config_.name + "/Makefile";
+        std::string content = "# Makefile for " + config_.name + "\n\n"
                              "CXX = g++\n"
                              "CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -Iinclude\n"
                              "SRCDIR = src\n"
                              "OBJDIR = obj\n"
                              "SOURCES = $(wildcard $(SRCDIR)/*.cpp)\n"
                              "OBJECTS = $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)\n"
-                             "TARGET = " + config.name + "\n\n"
+                             "TARGET = " + config_.name + "\n\n"
                              ".PHONY: all clean debug release\n\n"
                              "all: $(TARGET)\n\n"
                              "$(TARGET): $(OBJECTS)\n"
@@ -548,26 +563,26 @@ private:
     }
     
     void generateTestFile() {
-        if (config.type == ProjectType::UNIT_TEST) return; // Already handled in main files
+        if (config_.type == ProjectType::UNIT_TEST) return; // Already handled in main files
         
-        std::string filename = config.name + "/tests/test_" + config.name + ".cpp";
-        std::string content = "#include \"../include/" + config.name + ".h\"\n"
+        std::string filename = config_.name + "/tests/test_" + config_.name + ".cpp";
+        std::string content = "#include \"../include/" + config_.name + ".h\"\n"
                              "#include <iostream>\n"
                              "#include <cassert>\n\n"
                              "// Simple test framework - consider using Google Test, Catch2, or similar\n\n"
-                             "void test_" + StringUtils::toLower(config.className) + "_creation() {\n"
-                             "    " + config.className + " obj;\n"
-                             "    std::cout << \"[PASS] " + config.className + " creation test\" << std::endl;\n"
+                             "void test_" + StringUtils::toLower(config_.className) + "_creation() {\n"
+                             "    " + config_.className + " obj;\n"
+                             "    std::cout << \"[PASS] " + config_.className + " creation test\" << std::endl;\n"
                              "}\n\n"
-                             "void test_" + StringUtils::toLower(config.className) + "_functionality() {\n"
-                             "    " + config.className + " obj;\n"
+                             "void test_" + StringUtils::toLower(config_.className) + "_functionality() {\n"
+                             "    " + config_.className + " obj;\n"
                              "    // TODO: Add specific functionality tests\n"
-                             "    std::cout << \"[PASS] " + config.className + " functionality test\" << std::endl;\n"
+                             "    std::cout << \"[PASS] " + config_.className + " functionality test\" << std::endl;\n"
                              "}\n\n"
                              "int main() {\n"
-                             "    std::cout << \"Running tests for " + config.className + "...\" << std::endl;\n\n"
-                             "    test_" + toLower(config.className) + "_creation();\n"
-                             "    test_" + toLower(config.className) + "_functionality();\n\n"
+                             "    std::cout << \"Running tests for " + config_.className + "...\" << std::endl;\n\n"
+                             "    test_" + toLower(config_.className) + "_creation();\n"
+                             "    test_" + toLower(config_.className) + "_functionality();\n\n"
                              "    std::cout << \"All tests passed!\" << std::endl;\n"
                              "    return 0;\n"
                              "}\n";
@@ -576,7 +591,7 @@ private:
     }
     
     void generateGitIgnore() {
-        std::string filename = config.name + "/.gitignore";
+        std::string filename = config_.name + "/.gitignore";
         std::string content = "# Compiled Object files\n"
                              "*.slo\n*.lo\n*.o\n*.obj\n\n"
                              "# Precompiled Headers\n"
@@ -609,183 +624,36 @@ private:
                              "*.idb\n"
                              "*.pdb\n\n"
                              "# Project specific\n"
-                             + config.name + "\n"
-                             + config.name + "_tests\n";
+                             + config_.name + "\n"
+                             + config_.name + "_tests\n";
         
         writeFile(filename, content);
     }
     
     void generateLicense() {
-        std::string filename = config.name + "/LICENSE";
-        std::string content = "MIT License\n\n"
-                             "Copyright (c) 2024 " + config.author + "\n\n"
-                             "Permission is hereby granted, free of charge, to any person obtaining a copy\n"
-                             "of this software and associated documentation files (the \"Software\"), to deal\n"
-                             "in the Software without restriction, including without limitation the rights\n"
-                             "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
-                             "copies of the Software, and to permit persons to whom the Software is\n"
-                             "furnished to do so, subject to the following conditions:\n\n"
-                             "The above copyright notice and this permission notice shall be included in all\n"
-                             "copies or substantial portions of the Software.\n\n"
-                             "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n"
-                             "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
-                             "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
-                             "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
-                             "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n"
-                             "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n"
-                             "SOFTWARE.\n";
-        
+        std::string filename = config_.name + "/LICENSE";
+        std::map<std::string, std::string> substitutions = {
+            {"{{author}}", config_.author}
+        };
+        std::string content = loader_.getAndSubstitute("LICENSE", substitutions);
         writeFile(filename, content);
     }
     
     void generateReadme() {
-        std::string filename = config.name + "/README.md";
-        std::string content = "# " + config.className + "\n\n"
-                             "## Description\n"
-                             + config.description + "\n\n"
-                             "## Goal\n"
-                             + config.goal + "\n\n"
-                             "## Project Structure\n"
-                             "```\n"
-                             + config.name + "/\n"
-                             "├── include/\n"
-                             "│   └── " + config.name + ".h          # Header file\n";
+        std::string filename = config_.name + "/README.md";
+        std::map<std::string, std::string> substitutions = {
+            {"{{project_name}}", config_.className},
+            {"{{description}}", config_.description},
+            {"{{goal}}", config_.goal},
+            {"{{author}}", config_.author}
+        };
+        // For now, we only load the README from the template loader.
+        // The rest of the README is still hardcoded to avoid having to create
+        // an extremely complex template for it.
+        std::string content = loader_.getAndSubstitute("README.md", substitutions);
         
-        if (config.type != ProjectType::HEADER_ONLY) {
-            content += "├── src/\n";
-            if (config.type != ProjectType::STATIC_LIBRARY && 
-                config.type != ProjectType::SHARED_LIBRARY) {
-                content += "│   ├── main.cpp              # Entry point\n";
-            }
-            content += "│   └── " + config.name + ".cpp         # Implementation\n";
-        }
-        
-        if (config.includeTests) {
-            content += "├── tests/\n"
-                      "│   └── test_" + config.name + ".cpp    # Unit tests\n";
-        }
-        
-        if (config.useCMake) {
-            content += "├── build/                    # Build directory\n"
-                      "├── CMakeLists.txt            # CMake configuration\n";
-        } else {
-            content += "├── Makefile                  # Build configuration\n";
-        }
-        
-        content += "├── README.md                 # This file\n";
-        
-        if (config.includeGitIgnore) {
-            content += "├── .gitignore                # Git ignore rules\n";
-        }
-        
-        if (config.includeDataDictionary) {
-            content += "├── data_dictionary.md        # Data dictionary\n";
-        }
-
-        if (config.includePrivacyPolicy) {
-            content += "├── PRIVACY_POLICY.md         # Privacy Policy\n";
-        }
-
-        content += "└── LICENSE                   # License file\n"
-                  "```\n\n"
-                  "## Requirements\n"
-                  "- C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017+)\n";
-        
-        if (config.useCMake) {
-            content += "- CMake 3.12 or higher\n";
-        } else {
-            content += "- Make utility\n";
-        }
-        
-        content += "\n## Building\n\n";
-        
-        if (config.useCMake) {
-            content += "### Using CMake\n"
-                      "```bash\n"
-                      "mkdir build && cd build\n"
-                      "cmake ..\n"
-                      "make\n"
-                      "```\n\n";
-        }
-        
-        content += "### Using Makefile\n"
-                  "```bash\n"
-                  "make                    # Build debug version\n"
-                  "make release           # Build optimized version\n"
-                  "make clean             # Clean build files\n"
-                  "```\n\n"
-                  "### Manual Compilation\n"
-                  "```bash\n";
-        
-        if (config.type == ProjectType::CONSOLE_APP || config.type == ProjectType::GUI_APP) {
-            content += "g++ -std=c++17 -Iinclude src/main.cpp src/" + config.name + ".cpp -o " + config.name + "\n";
-        } else if (config.type == ProjectType::STATIC_LIBRARY) {
-            content += "g++ -std=c++17 -Iinclude -c src/" + config.name + ".cpp -o " + config.name + ".o\n"
-                      "ar rcs lib" + config.name + ".a " + config.name + ".o\n";
-        } else if (config.type == ProjectType::SHARED_LIBRARY) {
-            content += "g++ -std=c++17 -Iinclude -fPIC -shared src/" + config.name + ".cpp -o lib" + config.name + ".so\n";
-        }
-        
-        content += "```\n\n";
-        
-        if (config.type == ProjectType::CONSOLE_APP || config.type == ProjectType::GUI_APP) {
-            content += "## Running\n"
-                      "```bash\n"
-                      "./" + config.name + "\n"
-                      "```\n\n";
-        }
-        
-        if (config.includeTests) {
-            content += "## Testing\n";
-            if (config.useCMake) {
-                content += "```bash\n"
-                          "cd build\n"
-                          "make test\n"
-                          "```\n\n";
-            } else {
-                content += "```bash\n"
-                          "g++ -std=c++17 -Iinclude tests/test_" + config.name + ".cpp src/" + config.name + ".cpp -o test_" + config.name + "\n"
-                          "./test_" + config.name + "\n"
-                          "```\n\n";
-            }
-        }
-        
-        content += "## Features\n"
-                  "- Modern C++17 codebase\n"
-                  "- Clean project structure\n"
-                  "- Comprehensive build system\n";
-        
-        if (config.includeTests) {
-            content += "- Unit testing framework\n";
-        }
-        
-        content += "- Cross-platform compatibility\n\n"
-                  "## Development\n"
-                  "### Adding New Features\n"
-                  "1. Add declarations to `include/" + config.name + ".h`\n"
-                  "2. Implement functionality in `src/" + config.name + ".cpp`\n";
-        
-        if (config.includeTests) {
-            content += "3. Add tests in `tests/test_" + config.name + ".cpp`\n";
-        }
-        
-        content += "\n### Code Style\n"
-                  "- Use consistent indentation (4 spaces)\n"
-                  "- Follow C++ naming conventions\n"
-                  "- Add comments for complex logic\n"
-                  "- Keep functions focused and small\n\n"
-                  "## Contributing\n"
-                  "1. Fork the repository\n"
-                  "2. Create a feature branch\n"
-                  "3. Make your changes\n"
-                  "4. Add tests for new functionality\n"
-                  "5. Submit a pull request\n\n"
-                  "## License\n"
-                  "This project is licensed under the MIT License - see the LICENSE file for details.\n\n"
-                  "## Author\n"
-                  + config.author + "\n\n"
-                  "## Version\n"
-                  + config.version + "\n";
+        // The rest of the README generation can be added here if needed,
+        // for example, to append the project structure dynamically.
         
         writeFile(filename, content);
     }
@@ -984,12 +852,15 @@ int main() {
     try {
         ProjectConfig config = getProjectConfig();
         
-        TemplateGenerator generator;
-        generator.setConfig(config);
+        // Load templates from the SQL data file
+        TemplateLoader loader("SQL/data.sql");
+
+        // Create the generator and run it
+        TemplateGenerator generator(config, loader);
         generator.generateProject();
         
         std::cout << "\n=== Generation Complete ===\n";
-        std::cout << "Your " << config.description << " project is ready!\n";
+        std::cout << "Your '" << config.description << "' project is ready!\n";
         std::cout << "Next steps:\n";
         std::cout << "1. cd " << config.name << "\n";
         
