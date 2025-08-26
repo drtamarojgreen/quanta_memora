@@ -78,6 +78,7 @@ This document lists 50 potential enhancements for the C++ Template Generator. Th
 ## II. Generated Project & Code Quality
 
 #### 11. C++20/23 Standard Support
+- **Status**: Planned
 - **Description**: Add an option to select a newer C++ standard (C++20 or C++23), which would adjust the compiler flags in the generated `CMakeLists.txt` or `Makefile`.
 - **Implementation**:
     1. Add a `std::string cppStandard` field to `ProjectConfig`.
@@ -85,6 +86,7 @@ This document lists 50 potential enhancements for the C++ Template Generator. Th
     3. Use this value in `generateCMakeFile` and `generateMakefile` to set `CMAKE_CXX_STANDARD` or the `-std=` flag.
 
 #### 12. Customizable Namespace
+- **Status**: Planned
 - **Description**: Allow the user to specify a top-level namespace for the generated C++ code.
 - **Implementation**:
     1. Add a `std::string projectNamespace` to `ProjectConfig`.
@@ -185,6 +187,7 @@ This document lists 50 potential enhancements for the C++ Template Generator. Th
 ## III. Generator Internals & Maintainability
 
 #### 26. Refactor `TemplateGenerator` Class
+- **Status**: Planned
 - **Description**: The `TemplateGenerator` class is doing too much. Refactor it by splitting its responsibilities into smaller, more focused classes (e.g., `ProjectWriter`, `CMakeGenerator`, `MakefileGenerator`, `SourceCodeGenerator`).
 - **Implementation**:
     1. Define new classes for each responsibility.
